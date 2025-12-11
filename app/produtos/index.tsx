@@ -1,6 +1,7 @@
 import api from "@/src/services/api";
+import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface Produto {
     id: number;
@@ -36,10 +37,9 @@ export default function ProdutosScreen() {
         return (
             <View style={styles.itemContainer}>
                 <View style={styles.itemHeader}>
-                    <Text style={styles.id}>{item.id}</Text>
                     <Text style={styles.nome_produto}>{item.nome_produto}</Text>
                     <Text style={styles.categoria}>{item.categoria}</Text>
-                    <Text style={styles.valor_produto}>{item.valor_produto}</Text>
+                    <Text style={styles.valor_produto}>R$ {item.valor_produto}</Text>
                 </View>
             </View>
         )
@@ -77,12 +77,26 @@ export default function ProdutosScreen() {
                 <Text style={styles.count}>{produtos.length} produtos</Text>
             </View>
 
+            <View style={styles.cabecalho}>
+                <Text style={styles.cabecalhoTexto}>Produto</Text>
+                <Text style={styles.cabecalhoTexto}>Categoria</Text>
+                <Text style={styles.cabecalhoTexto}>Valor</Text>
+
+            </View>
+
             <FlatList
                 data={produtos}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderizarItem}
                 contentContainerStyle={styles.list}     
             />
+
+            <TouchableOpacity style={styles.btn}>
+                <Link href="/produtos/adicionar" style={styles.btnText}>
+                    +
+                </Link>
+
+            </TouchableOpacity>
         </View>
     )
 }
@@ -136,27 +150,22 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     nome_produto: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
         color: '#333',
-        flex: 1,
+        marginTop: 4,
+        marginBottom: 4,
     },
     categoria: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        flex: 1,
-    },
-    id: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        flex: 1,
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
     },
     valor_produto: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#333'
+        color: '#2ecc71',
+        textAlign: 'right',
     },
     loadingText: {
         marginTop: 10,
@@ -172,5 +181,41 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         textAlign: 'center'
+    },
+    cabecalho: {
+        flexDirection: 'row',
+        backgroundColor: '#f8f9fa',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0'
+    },
+    cabecalhoTexto: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#666',
+        flex: 1,
+        textAlign: 'center',
+    },
+    btn: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: '#007bff',
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2},
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
+    btnText: {
+        color: 'white',
+        fontSize: 30,
+        fontWeight: 'bold'
     }
 });
