@@ -2,10 +2,11 @@ import { Link } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
+
 export default function Index() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>FajaLoja</Text>
+    <View className="flex-1 justify-center items-center">
+      <Text className="text-white">FajaLoja</Text>
       <Text style={styles.subtitle}>Sua API está conectada.</Text>
 
       <TouchableOpacity style={styles.button}>
@@ -13,7 +14,10 @@ export default function Index() {
           ver produtos
         </Link>
       </TouchableOpacity>
+
     </View>
+
+    
   );
 }
 
