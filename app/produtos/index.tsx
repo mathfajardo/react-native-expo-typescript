@@ -1,7 +1,8 @@
 import api from "@/src/services/api";
-import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Link, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+
 
 interface Produto {
     id: number;
@@ -14,10 +15,14 @@ export default function ProdutosScreen() {
     const [produtos, setProdutos] = useState<Produto[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [recarregar, SetRecarregar] = useState(false);
 
-    useEffect(() => {
-        carregarProdutos();
-    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            carregarProdutos();
+        }, [])
+    );
 
     async function carregarProdutos() {
         try {
@@ -33,66 +38,111 @@ export default function ProdutosScreen() {
         }
     }
 
+    async function deletarProduto(id: number) {
+        Alert.alert(
+            "Confirmar",
+            "Deseja realmente excluir o produto?",
+            [
+                { text: "Cancelar", style: "cancel"},
+                {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await api.delete(`/produtos/${id}`);
+                            setProdutos(produtos.filter(p => p.id !== id));
+                        } catch (error) {
+                            Alert.alert("Erro", "Não foi possível excluir");
+                            console.error("Erro: ", error);
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
     function renderizarItem({ item }: { item: Produto }) {
         return (
-            <View style={styles.itemContainer}>
-                <View style={styles.itemHeader}>
-                    <Text style={styles.nome_produto}>{item.nome_produto}</Text>
-                    <Text style={styles.categoria}>{item.categoria}</Text>
-                    <Text style={styles.valor_produto}>R$ {item.valor_produto}</Text>
-                </View>
+            <View className="bg-neutral-600 p-4 rounder-lg mb-3 shadow shadow-black/10">
+                <View className="flex-row justify-between items-center">
+                    <View className="flex-1">
+                        <Text className="text-base font-semibold text-white flex-1 mr-2" numberOfLines={2}>{item.nome_produto}</Text>
+                    </View>
+                    
+                    <View className="flex-row mt-1">
+                        <Text className="text-sm text-gray-300 mr-3">{item.categoria}</Text>
+                        <Text className="text-base font-bold text-green-500">R$ {item.valor_produto}</Text>
+                    </View>
+
+                    <TouchableOpacity className="ml-3 p-2 bg-red-500 rounded" onPress={() => deletarProduto(item.id)}>
+                    <Text className="text-sm font-bold text-white flex-1">Excluir</Text>
+                    </TouchableOpacity>
+                </View>       
             </View>
+
+            
         )
+    }
+
+    async function onRecarregar() {
+        SetRecarregar(true);
+        await carregarProdutos();
+        SetRecarregar(false);
     }
 
     if (loading) {
         return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color="#0000ff"/>
-                <Text style={styles.loadingText}>Carregando produtos...</Text>
+            <View className="flex-1 justify-center items-center p-5 bg-neutral-800">
+                <ActivityIndicator size="large" color="#ffffff"/>
+                <Text className="mt-3 text-lg text-white">Carregando produtos...</Text>
             </View>
         );
     }
 
     if (error) {
         return (
-            <View style={styles.center}>
-                <Text style={styles.errorText}>{error}</Text>
+            <View className="flex-1 justify-center items-center p-5 bg-neutral-800">
+                <Text className="text-lg text-red-500 text-center">{error}</Text>
             </View>
         )
     }
 
     if (produtos.length === 0) {
         return (
-            <View style={styles.center}>
-                <Text style={styles.emptyText}>Nenhum produto encontrado</Text>
+            <View className="flex-1 justify-center items-center p-5 bg-neutral-800">
+                <Text className="text-lg text-white text-center">Nenhum produto encontrado</Text>
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Lista de produtos</Text>
-                <Text style={styles.count}>{produtos.length} produtos</Text>
+        <View className="flex-1 bg-neutral-800">
+            <View className="bg-neutral-800 p-4 border-gray-300 flex-row justify-between items-center">
+                <Text className="text-xl font-bold text-white">Lista de produtos</Text>
+                <Text className="text-sm text-white">{produtos.length} produtos</Text>
             </View>
 
-            <View style={styles.cabecalho}>
-                <Text style={styles.cabecalhoTexto}>Produto</Text>
-                <Text style={styles.cabecalhoTexto}>Categoria</Text>
-                <Text style={styles.cabecalhoTexto}>Valor</Text>
-
+            <View className="flex-row px-4 py-3 border-b border-gray-300">
+                <Text className="text-sm font-bold text-white flex-1">Produtos</Text>
             </View>
 
             <FlatList
                 data={produtos}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderizarItem}
-                contentContainerStyle={styles.list}     
+                contentContainerStyle={{ padding: 16}} 
+                refreshControl={
+                    <RefreshControl 
+                        refreshing={recarregar}
+                        onRefresh={onRecarregar}
+                        colors={["#000000ff"]}
+                        tintColor="#ffffff"
+                    />
+                } 
             />
 
-            <TouchableOpacity style={styles.btn}>
-                <Link href="/produtos/adicionar" style={styles.btnText}>
+            <TouchableOpacity className="absolute bottom-5 right-5 w-16 h-16 bg-blue-500 rounded-full justify-center items-center shadow-lg shadow-black/30">
+                <Link href="/produtos/adicionar" className="text-white text-3x1 font-bold">
                     +
                 </Link>
 
@@ -101,121 +151,3 @@ export default function ProdutosScreen() {
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-    },
-    center: {
-        flex:1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    header: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    count: {
-        fontSize: 14,
-        color: '#666',
-    },
-    list: {
-        padding: 16
-    },
-    itemContainer: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1},
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    itemHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    nome_produto: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginTop: 4,
-        marginBottom: 4,
-    },
-    categoria: {
-        fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
-    },
-    valor_produto: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#2ecc71',
-        textAlign: 'right',
-    },
-    loadingText: {
-        marginTop: 10,
-        fontSize: 16,
-        color: '#666',
-    },
-    errorText: {
-        fontSize: 16,
-        color: '#e74c3c',
-        textAlign: 'center',
-    },
-    emptyText: {
-        fontSize: 16,
-        color: '#666',
-        textAlign: 'center'
-    },
-    cabecalho: {
-        flexDirection: 'row',
-        backgroundColor: '#f8f9fa',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0'
-    },
-    cabecalhoTexto: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#666',
-        flex: 1,
-        textAlign: 'center',
-    },
-    btn: {
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        backgroundColor: '#007bff',
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2},
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-    },
-    btnText: {
-        color: 'white',
-        fontSize: 30,
-        fontWeight: 'bold'
-    }
-});

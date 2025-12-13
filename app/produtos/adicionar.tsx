@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import {
     Alert,
     ScrollView,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -53,57 +52,60 @@ export default function AdicionarProduto() {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Adicionar produto</Text>
+        <ScrollView className="flex-1 bg-neutral-800">
+            <View className="bg-neutral-800 p-5 border-b border-gray-700 items-center">
+                <Text className="text-2x1 font-bold text-white">Adicionar produto</Text>
             </View>
 
-            <View style={styles.form}>
+            <View className="bg-neutral-700 m-4 p-5 rounded-lg shadow shadow-black/10">
                 {/* campo nome */}
-                <Text style={styles.label}>Nome do produto</Text>
+                <Text className="text-lg font-semibold text-white mb-2">Nome do produto</Text>
                 <TextInput
-                    style={styles.input}
+                    className="border border-gray-600 rounded-lg p-3 text-white bg-neutral-800 mb-4"
                     value={nome}
                     onChangeText={setNome}
                     placeholder="Digite o nome do produto"
+                    placeholderTextColor="#9CA3AF"
                 />
 
                 {/* campo categoria */}
-                <Text style={styles.label}>Categoria</Text>
+                <Text className="text-lg font-semibold text-white mb-2">Categoria</Text>
                 <TextInput
-                    style={styles.input}
+                    className="border border-gray-600 rounded-lg p-3 text-white bg-neutral-800 mb-4"
                     value={categoria}
                     onChangeText={setCategoria}
                     placeholder="Digite o nome da categoria"
+                    placeholderTextColor="#9CA3AF"
                 />
 
                 {/* campo valor */}
-                <Text style={styles.label}>Valor (R$)</Text>
+                <Text className="text-lg font-semibold text-white mb-2">Valor (R$)</Text>
                 <TextInput
-                    style={styles.input}
+                    className="border border-gray-600 rounded-lg p-3 text-white bg-neutral-800 mb-4"
                     value={valor}
                     onChangeText={setValor}
                     placeholder="Digite o valor"
+                    placeholderTextColor="#9CA3AF"
                     keyboardType="numeric"
                 />
 
                 {/* botoes */}
                 <TouchableOpacity
-                    style={[styles.btn, styles.btnPrimary]}
+                    className="bg-blue-600 p-4 rounded-lg mb-3"
                     onPress={Adicionar}
                     disabled={carregando}
                 >
-                    <Text style={styles.btnText}>
+                    <Text className="text-white text-center text-lg font-semibold">
                         {carregando ? "Salvando..." : "Adicionar produto"}
                     </Text>
 
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.btn, styles.btnSecondary]}
+                    className="bg-gray-600 p-4 rounded-lg"
                     onPress={() => router.back()}
                 >
-                    <Text style={styles.btnText}>Cancelar</Text>
+                    <Text className="text-white text-center text-lg font-semibold">Cancelar</Text>
 
                 </TouchableOpacity>
             </View>
@@ -111,67 +113,3 @@ export default function AdicionarProduto() {
         </ScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        backgroundColor: '#f5f5f5',
-    },
-    header: {
-        backgroundColor: '#fff',
-        padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    form: {
-        backgroundColor: '#fff',
-        margin: 16,
-        padding: 20,
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1},
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-        color: '#333',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 6,
-        padding: 12,
-        fontSize: 16, 
-        marginBottom: 20,
-        backgroundColor: '#f9f9f9',
-    },
-    btn: {
-        padding: 16, 
-        borderRadius: 6,
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    btnPrimary: {
-        backgroundColor: '#007bff',
-    },
-    btnSecondary: {
-        backgroundColor: '#6c757d',
-    },
-    btnText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    
-
-});
