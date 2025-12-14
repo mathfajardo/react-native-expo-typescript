@@ -1,4 +1,5 @@
 import api from "@/src/services/api";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Link, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
@@ -142,8 +143,10 @@ export default function ProdutosScreen() {
             />
 
             <TouchableOpacity className="absolute bottom-5 right-5 w-16 h-16 bg-blue-500 rounded-full justify-center items-center shadow-lg shadow-black/30">
-                <Link href="../produtos/adicionar" className="text-white text-3x1 font-bold">
-                    +
+                <Link href="../produtos/adicionar" asChild>
+                    <TouchableOpacity>
+                        <MaterialIcons name="add" size={32} color="white" />
+                    </TouchableOpacity>
                 </Link>
 
             </TouchableOpacity>
