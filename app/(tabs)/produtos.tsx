@@ -142,7 +142,7 @@ export default function ProdutosScreen() {
             />
 
             <TouchableOpacity className="absolute bottom-5 right-5 w-16 h-16 bg-blue-500 rounded-full justify-center items-center shadow-lg shadow-black/30">
-                <Link href="/produtos/adicionar" className="text-white text-3x1 font-bold">
+                <Link href="../produtos/adicionar" className="text-white text-3x1 font-bold">
                     +
                 </Link>
 
